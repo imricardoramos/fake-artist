@@ -1,0 +1,37 @@
+<div class="h-full bg-blue-500">
+  <h1 class="text-center text-6xl text-white my-10">A Fake Artist goes to New York</h1>
+  <!-- LOBBY VIEW -->
+  <div id="lobby" class="mx-auto max-w-screen-sm bg-white rounded-xl p-10" >
+    <input class="border border-gray-300 rounded-md p-2 m-4" type="text" name="name" placeholder="Enter your name" autocomplete="off" />
+    <hr />
+    <h2 class="text-center text-3xl font-bold my-2 text-gray-800">Players:</h2>
+    <div class="player_slots flex flex-wrap justify-center"></div>
+    <button id="start-button" class="px-4 py-2 rounded-xl bg-blue-500 text-white font-bold m-4">Start Game</button>
+  </div>
+  <!-- GAME VIEW -->
+  <div id="game" style="display:none">
+    <div class="text-center bg-white my-2">
+      <div id="fake_artist" style="font-size: 2rem"></div>
+      <div id="category" style="font-size: 3rem"></div>
+      <div id="word" style="font-size: 3rem; font-weight: bold"></div>
+    </div>
+    <div class="flex">
+      <div class="player_slots"></div>
+      <div style="position: relative">
+        <div id="modal-message" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background-color: white; padding: 1rem; border: 1px solid black">AAA</div>
+        <canvas width="800" height="600" class="bg-white rounded-md" />
+      </div>
+      <div id="chat" class="bg-white rounded-md mx-2">
+        <input placeholder="Chat:" class="m-2" />
+      </div>
+    </div>
+  </div>
+  <!-- DELIBERATION VIEW -->
+  <div id="deliberation" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background-color: white; padding: 1rem; border: 1px solid black; border-radius: 1rem ">
+    <h2>Who's the fake artist? Discuss!</h2>
+    <div class="player_slots"></div>
+  </div>
+  <!-- GAME OVER VIEW -->
+  <div id="game_over" style="display:none; text-align: center; background-color: white; padding: 1rem; border: 1px solid black; border-radius: 1rem ">
+  </div>
+</div>

@@ -1,0 +1,113 @@
+name: Elixir CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    env:
+      MIX_ENV: prod
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache mix modules
+        uses: actions/cache@v1
+        env:
+          cache-name: cache-mix-modules
+        with:
+          path: deps # mix cache files are stored in `deps` in the root of the project folder
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-v1-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-v1
+
+        # - name: Setup Elixir
+        #   uses: actions/setup-elixir@v1.2.0
+        #   with:
+        #     otp-version: '23.0'
+        #     elixir-version: '1.11.0'
+      - name: Download elixir
+        run: wget https://packages.erlang-solutions.com/erlang/debian/pool/elixir_1.11.2-1~ubuntu~focal_all.deb
+
+      - name: Install elixir
+        run: |
+          sudo dpkg -i 'elixir_1.11.2-1~ubuntu~focal_all.deb'
+          mix local.hex --force 
+          mix local.rebar --force 
+
+      - name: Install Elixir Dependencies
+        run: mix deps.get --only prod
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v1
+        with:
+          node-version: "15.2.0"
+
+      - name: Cache npm modules
+        uses: actions/cache@v1
+        env:
+          cache-name: cache-npm-modules
+        with:
+          path: assets/node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-v1-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-v1
+
+      - name: Install NPM Dependencies
+        working-directory: ./assets
+        run: npm install
+
+
+      - name: Compile Elixir
+        run: MIX_ENV=prod mix compile
+
+      - name: Compile assets
+        run: |
+          npm run deploy --prefix ./assets
+          mix phx.digest
+          
+      - name: Build Mix Release
+        run: MIX_ENV=prod mix release --version ${{ github.sha }}
+
+      - name: copy file via ssh key
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "_build/prod/fake_artist-${{ github.sha }}.tar.gz"
+          target: "/tmp"
+
+      - name: Extract release command
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            mkdir -p fake_artist
+            mkdir -p fake_artist/releases
+            mkdir -p fake_artist/releases/${{ github.sha }}
+            tar -xzvf /tmp/_build/prod/fake_artist-${{ github.sha }}.tar.gz --directory ~/fake_artist/releases/${{ github.sha}}/
+            cd fake_artist/
+            eval "$(direnv export bash)"
+            ./fake_artist stop
+            ln -sfT ~/fake_artist/releases/${{ github.sha }}/bin/fake_artist ~/fake_artist/fake_artist
+            ./fake_artist version
+            ./fake_artist daemon
+
+      # - name: Run migrations
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.SSH_HOST }}
+      #     username: ${{ secrets.SSH_USERNAME }}
+      #     key: ${{ secrets.SSH_KEY }}
+      #     port: ${{ secrets.SSH_PORT }}
+      #     script: |
+      #       ./scholarmap/current/bin/prod eval "MorphicPro.Release.migrate"

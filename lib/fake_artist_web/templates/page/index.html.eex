@@ -1,0 +1,4 @@
+<div>
+  <h1>A Fake Artist goes to New York</h1>
+  <a href="/room/<%= @room_uuid %>">Create Room</a>
+</div>
