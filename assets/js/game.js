@@ -57,7 +57,7 @@ if(match){
             <div class="rounded-full w-5 h-5" style="background-color:${player.color}"></div>
             <div class="ml-2">${player.name}</div>
           </div>
-          <div class="votes" style="display:flex"></div>
+          <div class="votes flex ml-2 mt-1"></div>
         </div>
         `
       }
@@ -163,7 +163,7 @@ if(match){
       // console.log("Accused:", accused, "Votes:", votes)
       let innerHTML = votes.map(player_index => {
         let player = game.players[player_index]
-        return `<div style="border-radius: 100%; width: 20px; height:20px; background-color:${player.color}"></div>`
+        return `<div class="mr-1" style="border-radius: 100%; width: 20px; height:20px; background-color:${player.color}"></div>`
       }).reduce((accum, current) => accum+current, '') 
       document.querySelector(`.player_slots:last-child > div:nth-child(${accused+1}) .votes`).innerHTML = innerHTML
     })

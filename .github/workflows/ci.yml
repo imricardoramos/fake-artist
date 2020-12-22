@@ -94,7 +94,7 @@ jobs:
             mkdir -p fake_artist
             mkdir -p fake_artist/releases
             mkdir -p fake_artist/releases/${{ github.sha }}
-            tar -xzvf /tmp/_build/prod/fake_artist-${{ github.sha }}.tar.gz --directory ~/fake_artist/releases/${{ github.sha}}/
+            tar -xzf /tmp/_build/prod/fake_artist-${{ github.sha }}.tar.gz --directory ~/fake_artist/releases/${{ github.sha}}/
             cd fake_artist/
             eval "$(direnv export bash)"
             ./fake_artist stop
