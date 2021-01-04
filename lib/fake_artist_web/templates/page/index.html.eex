@@ -25,6 +25,6 @@
   <div class="mx-auto max-w-screen-sm bg-white rounded-xl p-10 my-2" >
     <h2 class="text-4xl mb-10">Sample Gameplay</h2>
     <p>If you're still unsure on how to play, here's a fun video of people playing it:</p>
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/k2z8l9k38mk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <iframe width="100%" height="315" src="https://www.youtube.com/embed/k2z8l9k38mk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
   </div>
 </div>
