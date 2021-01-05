@@ -38,6 +38,6 @@
     <div class="player_slots"></div>
   </div>
   <!-- GAME OVER VIEW -->
-  <div id="game_over" style="display:none; text-align: center; background-color: white; padding: 1rem; border: 1px solid black; border-radius: 1rem ">
+  <div id="game_over" class="bg-white text-center rounded-xl max-w-screen-sm p-10 mx-auto" style="display:none;">
   </div>
 </div>

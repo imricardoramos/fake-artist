@@ -170,13 +170,15 @@ if(match){
   })
   channel.on("game_over", payload => {
     game = payload
+    console.log("Game", game)
     document.querySelector("#lobby").style.display = "none"
     document.querySelector("#game").style.display = "none"
     document.querySelector("#deliberation").style.display = "none"
     let gameOverNode = document.querySelector("#game_over")
     gameOverNode.style.display = "block"
-    let title = game.winner === 'real_artists' && game.fake_artist != clientPlayer.id || game.winner == "fake_artist" && game.fake_artist === clientPlayer.id ? "You Win!" : "You lose!"
-    gameOverNode.innerHTML = `<h1>${title}</h1>`
+    let title = game.winner === 'real_artists' && game.fake_artist != clientPlayer.id || game.winner == "fake_artist" && game.fake_artist === clientPlayer.id ? "You Win!" : "You Lose!"
+    let fake_artist = game.players.find((player) => player.id == game.fake_artist)
+    gameOverNode.innerHTML = `<h1 class="font-bold text-3xl mb-5">${title}</h1><div class="text-xl mb-5">The fake artist was: <b>${fake_artist.name}!</b></div><div><a class="text-blue-500" href="">Play Again?</a></div>`
   })
 }
 document.querySelector('input[name="name"]').addEventListener("keyup", e => {
