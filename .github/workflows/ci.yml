@@ -25,19 +25,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-v1
 
-        # - name: Setup Elixir
-        #   uses: actions/setup-elixir@v1.2.0
-        #   with:
-        #     otp-version: '23.0'
-        #     elixir-version: '1.11.0'
-      - name: Download elixir
-        run: wget https://packages.erlang-solutions.com/erlang/debian/pool/elixir_1.11.2-1~ubuntu~focal_all.deb
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: '24.0'
+          elixir-version: '1.12.3'
+        # - name: Download elixir
+        #   run: wget https://packages.erlang-solutions.com/erlang/debian/pool/elixir_1.11.2-1~ubuntu~focal_all.deb
 
-      - name: Install elixir
-        run: |
-          sudo dpkg -i 'elixir_1.11.2-1~ubuntu~focal_all.deb'
-          mix local.hex --force 
-          mix local.rebar --force 
+        # - name: Install elixir
+        #   run: |
+        #     sudo dpkg -i 'elixir_1.11.2-1~ubuntu~focal_all.deb'
+        #     mix local.hex --force 
+        #     mix local.rebar --force 
 
       - name: Install Elixir Dependencies
         run: mix deps.get --only prod
