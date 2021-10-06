@@ -32,6 +32,9 @@ defmodule FakeArtist.GameServer do
   def vote_fake(pid, voting_player, voted_player) do
     GenServer.call(pid, {:vote_fake, voting_player, voted_player})
   end
+  def add_chat_msg(pid, msg) do
+    GenServer.call(pid, {:add_chat_msg, msg})
+  end
   def stop(pid) do
     GenServer.stop(pid)
   end
@@ -97,6 +100,12 @@ defmodule FakeArtist.GameServer do
   @impl true
   def handle_call({:vote_fake, voting_player, voted_player}, _from, game) do
     game = Game.vote_fake(game, voting_player, voted_player)
+    {:reply, game, game}
+  end
+
+  @impl true
+  def handle_call({:add_chat_msg, msg}, _from, game) do
+    game = Game.add_chat_msg(game, msg)
     {:reply, game, game}
   end
 

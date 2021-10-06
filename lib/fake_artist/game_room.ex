@@ -16,8 +16,6 @@ defmodule FakeArtist.GameRoom do
     socket = assign(socket, :game_state, FakeArtist.GameServer.get_state(pid))
     socket = assign(socket, :game_server_pid, pid)
     socket = assign(socket, :player, player)
-    IO.inspect(socket)
-    IO.inspect(pid)
     send(self(), :after_join)
     {:ok, [socket.assigns.game_state, player], socket}
   end
@@ -58,7 +56,6 @@ defmodule FakeArtist.GameRoom do
     game_state = FakeArtist.GameServer.mouseup(pid)
     socket = assign(socket, :game_state, game_state)
     broadcast!(socket, "next_turn", %{next_player: game_state.player_turn, status: game_state.status})
-    IO.inspect(socket)
     {:noreply, socket}
   end
   def handle_in("change_name", new_name, socket) do
@@ -75,7 +72,6 @@ defmodule FakeArtist.GameRoom do
     voting_player = socket.assigns.player
     voted_player = Enum.at(socket.assigns.game_state.players, player_index)
     game_state = FakeArtist.GameServer.vote_fake(pid, voting_player, voted_player)
-    IO.inspect(game_state)
     socket = assign(socket, :game_state, game_state)
     if game_state.status == :game_over do
       FakeArtist.GameServer.stop(pid)
@@ -83,6 +79,16 @@ defmodule FakeArtist.GameRoom do
     else
       broadcast!(socket, "vote_fake", %{votes: game_state.votes})
     end
+    {:noreply, socket}
+  end
+  def handle_in("chat_msg", msg, socket) do
+    pid = socket.assigns.game_server_pid
+    msg = %{
+      author: socket.assigns.player,
+      msg: msg
+    }
+    FakeArtist.GameServer.add_chat_msg(pid, msg)
+    broadcast!(socket, "add_chat_msg", msg)
     {:noreply, socket}
   end
   def handle_out("start_game", game_state, socket) do
@@ -97,6 +103,7 @@ defmodule FakeArtist.GameRoom do
     push(socket, "start_game", modified_game_state)
     {:noreply, socket}
   end
+
   
 end
 

@@ -13,7 +13,8 @@ defmodule FakeArtist.Game do
     category: nil,
     word: nil,
     votes: %{},
-    winner: nil
+    winner: nil,
+    chat: []
   ]
   def add_player(game, %Player{} = player) do
     players = game.players ++ [player]
@@ -86,8 +87,6 @@ defmodule FakeArtist.Game do
       game.votes
       |> Map.put(accusing_index, accused_index)
     game = game |> Map.replace!(:votes, votes)
-    IO.inspect(votes_count(game))
-    IO.inspect(number_of_players(game))
 
     if votes_count(game) == number_of_players(game) do
       terminate(game)
@@ -96,6 +95,10 @@ defmodule FakeArtist.Game do
     end
   end
 
+  def add_chat_msg(game, msg) do
+    game
+    |> Map.put(:chat, [msg | game.chat])
+  end
 
   def terminate(game) do
     accused =
@@ -106,11 +109,8 @@ defmodule FakeArtist.Game do
           accused == player
         end)}
       end)
-      |> IO.inspect()
       |> Enum.max_by(fn tuple -> elem(tuple, 1) end)
       |> elem(0)
-    IO.inspect(accused)
-    IO.inspect(game.fake_artist)
 
     if accused.id == game.fake_artist do
       game

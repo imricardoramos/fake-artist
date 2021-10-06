@@ -19,6 +19,13 @@ if(match){
   let game = null
   let clientPlayer = null
 
+  document.querySelector("#chat textarea").addEventListener("keyup", e => {
+    if(e.key == "Enter" && e.target.value != ""){
+      channel.push("chat_msg", e.target.value)
+      e.target.value = ""
+    }
+  })
+
   function loadGameState(payload){
     game = payload[0]
     clientPlayer = payload[1]
@@ -122,7 +129,6 @@ if(match){
     }
     else{
       let next_player = game.players[game.player_turn]
-      console.log(payload)
       document.querySelector("#modal-message").innerHTML = `<div><b>${previous_player.name}</b> lifted the pen...</div><div style="font-size: 4rem"><b>${next_player.name}</b></div><div style="font-size: 2rem">is next!</div>`
       document.querySelector("#modal-message").style.display = "block"
       setTimeout(() => {
@@ -131,7 +137,6 @@ if(match){
     }
   })
   channel.on("start_game", payload => {
-    console.log(payload)
     game = payload
     updatePlayers(game.players)
     let is_fake_artist = game.fake_artist != null
@@ -146,8 +151,17 @@ if(match){
     fake_artist_tag.innerText = is_fake_artist ? "You're the fake artist" : "You're not the fake artist"
   })
 
+  channel.on("add_chat_msg", payload => {
+    const e = document.createElement('div')
+    e.className = "p-3 border-b border-gray-100"
+    e.innerHTML = `
+    <div class="whitespace-pre-wrap font-bold text-gray-700">${payload.author.name}</div>
+    <div class="whitespace-pre-wrap break-words">${payload.msg}</div>
+    `
+    document.querySelector("#comments").insertAdjacentElement("afterbegin", e)
+  })
+
   channel.on("vote_fake", payload => {
-    console.log(payload)
     let votes = {}
     game.players.forEach((_, index) => {
       votes[index] = []
@@ -159,8 +173,6 @@ if(match){
     Object.entries(votes).forEach(entry => {
       let accused = parseInt(entry[0])
       let votes = entry[1]
-      // console.log("Me: ", clientPlayer)
-      // console.log("Accused:", accused, "Votes:", votes)
       let innerHTML = votes.map(player_index => {
         let player = game.players[player_index]
         return `<div class="mr-1" style="border-radius: 100%; width: 20px; height:20px; background-color:${player.color}"></div>`
@@ -170,7 +182,6 @@ if(match){
   })
   channel.on("game_over", payload => {
     game = payload
-    console.log("Game", game)
     document.querySelector("#lobby").style.display = "none"
     document.querySelector("#game").style.display = "none"
     document.querySelector("#deliberation").style.display = "none"
@@ -182,8 +193,6 @@ if(match){
   })
 }
 document.querySelector('input[name="name"]').addEventListener("keyup", e => {
-  console.log(e)
-  console.log(e.target.value)
   channel.push("change_name", e.target.value)
 })
 document.querySelector('#start-button').addEventListener("click", () => {

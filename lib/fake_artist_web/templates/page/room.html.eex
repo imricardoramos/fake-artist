@@ -27,8 +27,12 @@
         <div id="modal-message" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background-color: white; padding: 1rem; border: 1px solid black">AAA</div>
         <canvas width="800" height="600" class="bg-white rounded-md" />
       </div>
-      <div id="chat" class="bg-white rounded-md mx-2">
-        <input placeholder="Chat:" class="m-2" />
+      <div id="chat" class="bg-white rounded-md mx-2 flex-grow" style="min-width: 16rem; max-width: 24rem">
+        <div class="p-2">
+          <textarea placeholder="Say something..." class="p-2 w-full border border-gray-300 rounded-md"></textarea>
+        </div>
+        <div id="comments" class="w-full">
+        </div>
       </div>
     </div>
   </div>
