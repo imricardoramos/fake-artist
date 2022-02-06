@@ -96,18 +96,8 @@ jobs:
             mkdir -p fake_artist/releases/${{ github.sha }}
             tar -xzf /tmp/_build/prod/fake_artist-${{ github.sha }}.tar.gz --directory ~/fake_artist/releases/${{ github.sha}}/
             cd fake_artist/
-            eval "$(direnv export bash)"
+            echo ${{ secrets.SERVICE_TOKEN }} | doppler configure set token --silent --scope ./
             ./fake_artist stop
             ln -sfT ~/fake_artist/releases/${{ github.sha }}/bin/fake_artist ~/fake_artist/fake_artist
             ./fake_artist version
-            ./fake_artist daemon
-
-      # - name: Run migrations
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.SSH_HOST }}
-      #     username: ${{ secrets.SSH_USERNAME }}
-      #     key: ${{ secrets.SSH_KEY }}
-      #     port: ${{ secrets.SSH_PORT }}
-      #     script: |
-      #       ./scholarmap/current/bin/prod eval "MorphicPro.Release.migrate"
+            doppler run -- ./fake_artist daemon
