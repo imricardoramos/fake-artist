@@ -7,18 +7,14 @@ import Config
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
 config :fake_artist, FakeArtistWeb.Endpoint,
-  http: [port: 4000],
-  debug_errors: true,
-  code_reloader: true,
+  http: [ip: {127, 0, 0, 1}, port: 4000],
   check_origin: false,
+  code_reloader: true,
+  debug_errors: true,
+  secret_key_base: "kBFB+K5gqzXPMPxbZ7CEdOaw78+OnE2Gm7XxQNkEbGURDMP2TVIS7HTNzjazgFTo",
   watchers: [
-    node: [
-      "node_modules/webpack/bin/webpack.js",
-      "--mode",
-      "development",
-      "--watch-stdin",
-      cd: Path.expand("../assets", __DIR__)
-    ]
+    esbuild: {Esbuild, :install_and_run, [:fake_artist, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:fake_artist, ~w(--watch)]}
   ]
 
 # ## SSL Support
@@ -47,12 +43,11 @@ config :fake_artist, FakeArtistWeb.Endpoint,
 
 # Watch static and templates for browser reloading.
 config :fake_artist, FakeArtistWeb.Endpoint,
-  live_reload: [
+    live_reload: [
     patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/fake_artist_web/(live|views)/.*(ex)$",
-      ~r"lib/fake_artist_web/templates/.*(eex)$"
+      ~r"lib/fake_artist_web/(controllers|live|components)/.*(ex|heex)$"
     ]
   ]
 
