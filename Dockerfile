@@ -67,8 +67,12 @@ RUN mix release
 FROM ${RUNNER_IMAGE}
 
 RUN apt-get update -y && \
-  apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates curl \
-  && apt-get clean && rm -f /var/lib/apt/lists/*_*
+  apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates curl apt-transport-https gnupg && \
+  curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | gpg --dearmor -o /usr/share/keyrings/doppler-archive-keyring.gpg && \
+  echo "deb [signed-by=/usr/share/keyrings/doppler-archive-keyring.gpg] https://packages.doppler.com/public/cli/deb/debian any-version main" | tee /etc/apt/sources.list.d/doppler-cli.list && \
+  apt-get update -y && \
+  apt-get -y install doppler && \
+  apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # Set the locale
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
@@ -95,4 +99,4 @@ USER root
 
 EXPOSE 4000
 
-CMD ["/app/bin/server"]
+CMD ["doppler", "run", "--", "/app/bin/server"]
